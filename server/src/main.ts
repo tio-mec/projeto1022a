@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+import mysql, { QueryResult } from 'mysql2/promise';
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -14,7 +14,11 @@ connection
     .then((query)=>{
         const queryExecutada = query.execute([])
         .then((result)=>{
-            console.log(result)
+            const [rows, filds] = result
+            const dados = rows as Array<QueryResult>
+            for( let linha of dados){
+                console.log(linha)
+            }
         })
         .catch()
     })
