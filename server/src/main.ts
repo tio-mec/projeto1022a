@@ -1,47 +1,47 @@
-type Produto={
-    id:string,
-    nome:string,
-    preco:number,
-    imagem:string,
-    descricao:string
-}
-
-let produto:Produto = {
-    id:"1",
-    nome:"Caneta Azul",
-    descricao:"Caneta Bic de cor azul",
-    imagem:"Inexistente",
-    preco:2
-}
-console.log(produto)
-
-// Get the client
 import mysql from 'mysql2/promise';
-
-// Create the connection to database
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'test',
 });
 
-connection.catch((e)=>{
-    console.log("Erro ao conectar no banco");
-})
+connection
+.then((conn)=>{
+    console.log("Conectou no banco de dados.")
 
-connection.then((conn)=>{
-    // A simple SELECT query
-    try {
-        const connection = conn.connect()
-        const [results, fields] = (
-        'SELECT * FROM `table` WHERE `name` = "Page" AND `age` > 45'
-        );
-    
-        console.log(results); // results contains rows returned by server
-        console.log(fields); // fields contains extra meta data about results, if available
-    } catch (err) {
-        console.log(err);
+    const queryPreparada = conn.prepare("SELECT * from produtos");
+    queryPreparada
+    .then((query)=>{
+        const queryExecutada = query.execute([])
+        .then((result)=>{
+            console.log(result)
+        })
+        .catch()
+    })
+    .catch((e)=>{
+        if(e.code === 'ER_NO_SUCH_TABLE'){
+            console.log("A tabela produtos não foi criada, "
+            +"Crie a tabela no workbench! :D");
+        }else if(e.code==="ER_PARSE_ERROR"){
+            console.log("Sua query está com algo errado:")
+            console.log("Verifique: virgulas, pontos e nome de colunas.")
+        }
+        else{
+            console.log("Erro query desconhecido",e);
+        }
+    })
+
+})
+.catch((e)=>{
+    if(e.code === 'ECONNREFUSED'){
+        console.log("LIGAR O LARAGON!! MANÉ!");
+    }else if(e.code === 'ER_BAD_DB_ERROR'){
+        console.log("Deve criar o banco de DADOS {test}");
+    }
+    else{
+        console.log("Erro ao conectar no banco",e);
     }
 })
+
 
 
