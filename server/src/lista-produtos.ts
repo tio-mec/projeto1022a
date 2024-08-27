@@ -43,7 +43,7 @@ class ListaProdutos{
                 }
                 return produtosDoBanco
         }
-        catch(e){
+        catch(e:any){
             if(e.code === 'ER_NO_SUCH_TABLE'){
                 console.log("A tabela produtos não foi criada, "
                 +"Crie a tabela no workbench! :D");
