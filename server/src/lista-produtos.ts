@@ -6,6 +6,15 @@ type Output = {
     preco:number,
     imagem:string
 }
+
+interface ProdutoRowDataPacket extends RowDataPacket{
+    id:number,
+    nome:string,
+    descricao:string,
+    preco:string,
+    imagem:string
+}
+
 class ListaProdutos{
     async execute(){
         try{
@@ -16,18 +25,12 @@ class ListaProdutos{
             });
             const queryPreparada = await connection.prepare("SELECT * from produtos");
 
-            const queryExecutada = queryPreparada.execute([])
-            return queryExecutada
-            .then((result)=>{
-                const [rows, filds] = result
-                const dados = rows as RowDataPacket[]
+            const queryExecutada = await queryPreparada.execute([])
+                const [rows, filds] = queryExecutada
+                const dados = rows as ProdutoRowDataPacket[]
                 const produtosDoBanco:Output[] = []
                 for( let linha of dados){
-                    const id = linha.id
-                    const nome =linha.nome
-                    const descricao = linha.descricao
-                    const preco = linha.preco
-                    const imagem = linha.imagem
+                    const {id,nome,descricao,preco,imagem} = {...linha}
                     const produto = {
                         id,
                         nome,
@@ -38,8 +41,6 @@ class ListaProdutos{
                     produtosDoBanco.push(produto)
                 }
                 return produtosDoBanco
-            })
-            .catch()
         }
         catch(e){
             if(e.code === 'ER_NO_SUCH_TABLE'){
