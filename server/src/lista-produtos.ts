@@ -1,4 +1,5 @@
 import mysql, { RowDataPacket } from 'mysql2/promise';
+import 'dotenv/config'
 type Output = {
     id:number,
     nome:string,
@@ -19,9 +20,9 @@ class ListaProdutos{
     async execute(){
         try{
             const connection = await mysql.createConnection({
-                host: 'localhost',
-                user: 'root',
-                database: 'test',
+                host: process.env.DB_HOST,
+                user: process.env.DB_USUARIO,
+                database: process.env.DB_BANCO,
             });
             const queryPreparada = await connection.prepare("SELECT * from produtos");
 
