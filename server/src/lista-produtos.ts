@@ -7,17 +7,14 @@ type Output = {
     imagem:string
 }
 class ListaProdutos{
-    execute(){
-        const connection = mysql.createConnection({
-            host: 'localhost',
-            user: 'root',
-            database: 'test',
-        });
-        return connection
-        .then((conn)=>{
-            console.log("Conectou no banco de dados.")
-        
-            const queryPreparada = conn.prepare("SELECT * from produtos");
+    async execute(){
+        try{
+            const connection = await mysql.createConnection({
+                host: 'localhost',
+                user: 'root',
+                database: 'test',
+            });
+            const queryPreparada = connection.prepare("SELECT * from produtos");
             return queryPreparada
             .then((query)=>{
                 const queryExecutada = query.execute([])
@@ -57,9 +54,8 @@ class ListaProdutos{
                     console.log("Erro query desconhecido",e);
                 }
             })
-        
-        })
-        .catch((e)=>{
+        }
+        catch(e){
             if(e.code === 'ECONNREFUSED'){
                 console.log("LIGAR O LARAGON!! MANÉ!");
             }else if(e.code === 'ER_BAD_DB_ERROR'){
@@ -68,7 +64,7 @@ class ListaProdutos{
             else{
                 console.log("Erro ao conectar no banco",e);
             }
-        })        
+        }    
     }
 }
 export default ListaProdutos
